@@ -1,0 +1,107 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Audio Map</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHUyz3Z4XvLRi8yha2BsZeP9D45hOcmu8"></script>
+ <script>
+  let map;
+  let directionsService;
+  let directionsRenderer;
+
+  function initMap() {
+    const pins = [
+      {
+        position: { lat: 52.4955, lng: 5.0702 },
+        title: "Volendam Harbour",
+        image: "https://upload.wikimedia.org/wikipedia/commons/6/60/Volendam_haven.jpg",
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        description: "The beautiful harbour of Volendam with its fishing boats and terraces."
+      },
+      {
+        position: { lat: 52.4960, lng: 5.0715 },
+        title: "Dijkstraat",
+        image: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Dijk_Volendam.jpg",
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        description: "The famous street full of shops, restaurants, and the traditional Dutch houses."
+      },
+      {
+        position: { lat: 52.4950, lng: 5.0730 },
+        title: "Cheese Factory",
+        image: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Volendam_Cheese_Factory.jpg",
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        description: "Learn how Dutch cheese is made and taste some local specialties."
+      }
+    ];
+
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 52.495, lng: 5.070 },
+      zoom: 15
+    });
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+    directionsRenderer.setMap(map);
+
+    // Info windows on markers
+    pins.forEach(pin => {
+      const marker = new google.maps.Marker({
+        position: pin.position,
+        map,
+        icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+        title: pin.title
+      });
+
+      const content = `
+        <div style="width:200px">
+          <h3>${pin.title}</h3>
+          <img src="${pin.image}" style="width:100%;margin-bottom:5px">
+          <p>${pin.description}</p>
+          <audio controls style="width:100%">
+            <source src="${pin.audio}" type="audio/mpeg">
+          </audio>
+        </div>
+      `;
+
+      const infoWindow = new google.maps.InfoWindow({ content });
+      marker.addListener("click", () => infoWindow.open(map, marker));
+    });
+
+    // Get user's location and draw route
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const origin = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        const waypoints = pins.map(pin => ({
+          location: pin.position,
+          stopover: true
+        }));
+
+        const request = {
+          origin: origin,
+          destination: pins[pins.length - 1].position, // Last pin is endpoint
+          waypoints: waypoints.slice(0, -1), // All pins except last are waypoints
+          optimizeWaypoints: true,
+          travelMode: 'WALKING'
+        };
+
+        directionsService.route(request, (result, status) => {
+          if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+          } else {
+            alert('Kon geen route berekenen: ' + status);
+          }
+        });
+      });
+    }
+  }
+</script>
+</head>
+<body onload="initMap()">
+  <div id="map" style="height:100vh;width:100%"></div>
+</body>
+</html>
+```
