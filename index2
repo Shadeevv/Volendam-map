@@ -45,7 +45,7 @@
 
     // Info windows on markers
     pins.forEach(pin => {
-      const marker = new google.maps.Marker({
+      const marker = new google.maps.marker.AdvancedMarkerElement({
         position: pin.position,
         map,
         icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
@@ -105,3 +105,4 @@
 </body>
 </html>
 ```
+
