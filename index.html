@@ -84,7 +84,7 @@
           origin: origin,
           destination: pins[pins.length - 1].position, // Last pin is endpoint
           waypoints: waypoints.slice(0, -1), // All pins except last are waypoints
-          optimizeWaypoints: false,
+          optimizeWaypoints: true,
           travelMode: 'WALKING'
         };
 
@@ -105,4 +105,5 @@
 </body>
 </html>
 ```
+
 
